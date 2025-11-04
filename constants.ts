@@ -6,24 +6,33 @@ export const ADMIN_PASSWORD = 'HCSSadmin2024!';
 // ===================================================================================
 // !! IMPORTANT !! - ALERTS CONFIGURATION
 // ===================================================================================
-// To enable dynamic alerts, the app uses a public Google Sheet.
-// The URLs below point to a sample data source and a template sheet that you can copy.
+// To enable dynamic alerts, you must provide TWO links from YOUR OWN Google Sheet.
+// The Admin Panel will guide you if a link is missing.
 
-// INSTRUCTIONS for setting up your own alerts:
-// 1. Open the ALERTS_SHEET_EDIT_URL link below and click "File" > "Make a copy" to create your own version.
-// 2. In YOUR copied sheet, add your alerts. Then go to "File" > "Share" > "Publish to web".
-// 3. In the dialog, publish the sheet as a "Comma-separated values (.csv)" file.
-// 4. Copy the generated .csv URL and paste it below, replacing the sample ALERTS_SHEET_CSV_URL.
-// 5. From your sheet, click "Share" (top right), set "General access" to "Anyone with the link", and copy that link.
-// 6. Paste your sheet's link below, replacing the sample ALERTS_SHEET_EDIT_URL.
+// --- INSTRUCTIONS ---
+// 1. OPEN THE TEMPLATE & MAKE A COPY: 
+//    Open this link and click "File" > "Make a copy" to create your own sheet:
+//    https://docs.google.com/spreadsheets/d/1DPx6a5jA8i-c2g2aQ_Vf12TMZb4JzQ0Z_u-O_5Lg_wI/edit?usp=sharing
+//
+// 2. GET YOUR "SHARE" LINK (for the Admin Panel button):
+//    - In YOUR new sheet, click the "Share" button (top right).
+//    - Under "General access," set it to "Anyone with the link" and "Viewer."
+//    - Click "Copy link" and PASTE it below into ALERTS_SHEET_EDIT_URL.
+//
+// 3. GET YOUR "PUBLISH TO WEB" LINK (for the app to read data):
+//    - In YOUR sheet, go to "File" > "Share" > "Publish to web."
+//    - In the dialog, select your sheet.
+//    - Choose "Comma-separated values (.csv)" from the dropdown.
+//    - Click "Publish," then "OK."
+//    - Copy the generated link and PASTE it below into ALERTS_SHEET_CSV_URL.
 
-// This is the link to the editable Google Sheet. The admin panel button opens this URL.
-// It currently points to a read-only template. Replace it with your own sheet's URL.
-export const ALERTS_SHEET_EDIT_URL: string = 'https://docs.google.com/spreadsheets/d/11n4mPyCv_Amg_w2I-2FNnED2-i92p5Q_n19Q-8c-jY4/edit?usp=sharing';
+// STEP 2: Paste your sheet's "Share" link here.
+// This is the link the admin panel button opens.
+export const ALERTS_SHEET_EDIT_URL: string = 'https://docs.google.com/spreadsheets/d/1AULjkx_6jqNHyuHuEopXJ16b1ofImmjca6PODXO4T3o/edit?usp=sharing';
 
-// This is the published CSV link that the app fetches data from.
-// It currently points to a working sample CSV file so the app works out-of-the-box.
-export const ALERTS_SHEET_CSV_URL: string = 'https://gist.githubusercontent.com/ai-demos/3f705b1c593d8e57140f89c43e479c78/raw/00f1a260f545464177b96095a5f1a5660851ebd0/hcss-hub-alerts-v2.csv';
+// STEP 3: Paste your "Publish to web" CSV link here.
+// This is the link the app fetches data from.
+export const ALERTS_SHEET_CSV_URL: string = '';
 // ===================================================================================
 
 

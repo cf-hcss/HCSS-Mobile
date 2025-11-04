@@ -69,9 +69,9 @@ function App() {
 
   useEffect(() => {
     const fetchAlerts = async () => {
-      // If the sheet URL hasn't been configured, don't try to fetch.
-      if (!ALERTS_SHEET_CSV_URL) {
-          console.warn("Alerts Google Sheet URL is not configured. Displaying no alerts.");
+      // If the sheet URL hasn't been configured or is a placeholder, don't try to fetch.
+      if (!ALERTS_SHEET_CSV_URL || !ALERTS_SHEET_CSV_URL.startsWith('http')) {
+          console.warn("Alerts Google Sheet URL is not configured in constants.ts. Displaying no alerts.");
           setAlerts([]);
           setIsLoading(false);
           return;
