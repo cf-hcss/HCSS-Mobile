@@ -6,16 +6,24 @@ export const ADMIN_PASSWORD = 'HCSSadmin2024!';
 // ===================================================================================
 // !! IMPORTANT !! - ALERTS CONFIGURATION
 // ===================================================================================
-// To enable dynamic alerts, you can use this pre-configured sample URL or replace it.
-// INSTRUCTIONS:
-// 1. Create a Google Sheet with the exact headers (in any order): id, severity, title, message, date
-// 2. In the Google Sheet, go to File > Share > Publish to web.
-// 3. In the dialog, under "Link", select the specific sheet with your alerts.
-// 4. Change the format from "Web page" to "Comma-separated values (.csv)".
-// 5. Click the "Publish" button and copy the generated URL.
-// 6. Paste your copied URL below to replace the sample URL.
-// Fix: Explicitly type ALERTS_SHEET_URL as string to prevent overly narrow type inference.
-export const ALERTS_SHEET_URL: string = 'https://gist.githubusercontent.com/ai-demos/f3724c93563914a1e9411964f028457c/raw/f1e756c9a9ad84a32a0c41031a00a40d5884a2d7/hcss-hub-alerts.csv';
+// To enable dynamic alerts, the app uses a public Google Sheet.
+// The URLs below point to a sample data source and a template sheet that you can copy.
+
+// INSTRUCTIONS for setting up your own alerts:
+// 1. Open the ALERTS_SHEET_EDIT_URL link below and click "File" > "Make a copy" to create your own version.
+// 2. In YOUR copied sheet, add your alerts. Then go to "File" > "Share" > "Publish to web".
+// 3. In the dialog, publish the sheet as a "Comma-separated values (.csv)" file.
+// 4. Copy the generated .csv URL and paste it below, replacing the sample ALERTS_SHEET_CSV_URL.
+// 5. From your sheet, click "Share" (top right), set "General access" to "Anyone with the link", and copy that link.
+// 6. Paste your sheet's link below, replacing the sample ALERTS_SHEET_EDIT_URL.
+
+// This is the link to the editable Google Sheet. The admin panel button opens this URL.
+// It currently points to a read-only template. Replace it with your own sheet's URL.
+export const ALERTS_SHEET_EDIT_URL: string = 'https://docs.google.com/spreadsheets/d/1t8B--8Gufp8f5j3sCFp6MM4_NLkM-5G78-r-d1tq3w4/edit?usp=sharing';
+
+// This is the published CSV link that the app fetches data from.
+// It currently points to a working sample CSV file so the app works out-of-the-box.
+export const ALERTS_SHEET_CSV_URL: string = 'https://gist.githubusercontent.com/ai-demos/3f705b1c593d8e57140f89c43e479c78/raw/00f1a260f545464177b96095a5f1a5660851ebd0/hcss-hub-alerts-v2.csv';
 // ===================================================================================
 
 

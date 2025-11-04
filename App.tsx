@@ -13,7 +13,7 @@ import AlertsPage from './pages/AlertsPage.tsx';
 import AdminPage from './pages/AdminPage.tsx';
 import LoginPage from './pages/LoginPage.tsx';
 import { HCSS_LOGO_BASE64 } from './assets.ts';
-import { ADMIN_PASSWORD, ALERTS_SHEET_URL } from './constants.ts';
+import { ADMIN_PASSWORD, ALERTS_SHEET_CSV_URL } from './constants.ts';
 import type { AlertItem, AlertSeverity } from './types.ts';
 
 const parseCsvToAlerts = (csvText: string): AlertItem[] => {
@@ -70,7 +70,7 @@ function App() {
   useEffect(() => {
     const fetchAlerts = async () => {
       // If the sheet URL hasn't been configured, don't try to fetch.
-      if (!ALERTS_SHEET_URL || ALERTS_SHEET_URL === 'PASTE_YOUR_GOOGLE_SHEET_PUBLISH_URL_HERE') {
+      if (!ALERTS_SHEET_CSV_URL) {
           console.warn("Alerts Google Sheet URL is not configured. Displaying no alerts.");
           setAlerts([]);
           setIsLoading(false);
@@ -81,7 +81,7 @@ function App() {
       setError(null);
 
       try {
-        const response = await fetch(ALERTS_SHEET_URL);
+        const response = await fetch(ALERTS_SHEET_CSV_URL);
         
         if (!response.ok) {
           throw new Error(`HTTP error fetching Google Sheet! status: ${response.status}`);
