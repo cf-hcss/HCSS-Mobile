@@ -19,7 +19,7 @@ export const ADMIN_PASSWORD = 'HCSSadmin2024!';
 
 // This is the link to the editable Google Sheet. The admin panel button opens this URL.
 // It currently points to a read-only template. Replace it with your own sheet's URL.
-export const ALERTS_SHEET_EDIT_URL: string = 'https://docs.google.com/spreadsheets/d/1t8B--8Gufp8f5j3sCFp6MM4_NLkM-5G78-r-d1tq3w4/edit?usp=sharing';
+export const ALERTS_SHEET_EDIT_URL: string = 'https://docs.google.com/spreadsheets/d/11n4mPyCv_Amg_w2I-2FNnED2-i92p5Q_n19Q-8c-jY4/edit?usp=sharing';
 
 // This is the published CSV link that the app fetches data from.
 // It currently points to a working sample CSV file so the app works out-of-the-box.
