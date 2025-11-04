@@ -1,0 +1,24 @@
+
+[
+  {
+    "id": 1,
+    "severity": "Critical",
+    "title": "School Closure Notice",
+    "message": "HCSS will be closed on Friday, December 20th due to inclement weather. All after-school activities are also canceled. Please stay safe.",
+    "date": "December 19, 2023"
+  },
+  {
+    "id": 2,
+    "severity": "Warning",
+    "title": "Upcoming Half Day",
+    "message": "Reminder: This Wednesday is a half-day for students due to staff professional development. Dismissal will be at 11:30 AM.",
+    "date": "December 15, 2023"
+  },
+  {
+    "id": 3,
+    "severity": "Info",
+    "title": "Winter Concert",
+    "message": "Join us for the annual Winter Concert this Thursday at 7:00 PM in the high school auditorium. Our talented students will be performing seasonal favorites.",
+    "date": "December 14, 2023"
+  }
+]
