@@ -13,8 +13,53 @@ import AlertsPage from './pages/AlertsPage.tsx';
 import AdminPage from './pages/AdminPage.tsx';
 import LoginPage from './pages/LoginPage.tsx';
 import { HCSS_LOGO_BASE64 } from './assets.ts';
-import { ADMIN_PASSWORD } from './constants.ts';
-import type { AlertItem } from './types.ts';
+import { ADMIN_PASSWORD, ALERTS_SHEET_URL } from './constants.ts';
+import type { AlertItem, AlertSeverity } from './types.ts';
+
+const parseCsvToAlerts = (csvText: string): AlertItem[] => {
+    try {
+        const lines = csvText.trim().split(/\r?\n/);
+        if (lines.length < 2) return []; // No header or no data
+
+        // Extract and trim headers from the first line
+        const headers = lines.shift()!.split(',').map(h => h.trim());
+        
+        // Find the column index for each required field
+        const idIndex = headers.indexOf('id');
+        const severityIndex = headers.indexOf('severity');
+        const titleIndex = headers.indexOf('title');
+        const messageIndex = headers.indexOf('message');
+        const dateIndex = headers.indexOf('date');
+
+        // If any header is missing, we can't process the file
+        if ([idIndex, severityIndex, titleIndex, messageIndex, dateIndex].includes(-1)) {
+            console.error('CSV from Google Sheet is missing required headers: id, severity, title, message, date');
+            return [];
+        }
+        
+        return lines.map(line => {
+            const values = line.split(',');
+            // Ensure we have enough columns for this row before trying to access indices
+            if (values.length <= Math.max(idIndex, severityIndex, titleIndex, messageIndex, dateIndex)) return null;
+
+            const id = parseInt(values[idIndex], 10);
+            
+            if (isNaN(id)) return null; // Skip rows with invalid IDs
+
+            return {
+                id: id,
+                severity: values[severityIndex]?.trim() as AlertSeverity || 'Info',
+                title: values[titleIndex]?.trim() || '',
+                message: values[messageIndex]?.trim() || '',
+                date: values[dateIndex]?.trim() || '',
+            };
+        }).filter((item): item is AlertItem => item !== null); // Filter out any null entries
+    } catch (error) {
+        console.error("Error parsing CSV from Google Sheet:", error);
+        return [];
+    }
+};
+
 
 function App() {
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
@@ -24,40 +69,38 @@ function App() {
 
   useEffect(() => {
     const fetchAlerts = async () => {
+      // If the sheet URL hasn't been configured, don't try to fetch.
+      if (!ALERTS_SHEET_URL || ALERTS_SHEET_URL === 'PASTE_YOUR_GOOGLE_SHEET_PUBLISH_URL_HERE') {
+          console.warn("Alerts Google Sheet URL is not configured. Displaying no alerts.");
+          setAlerts([]);
+          setIsLoading(false);
+          return;
+      }
+
       setIsLoading(true);
       setError(null);
 
       try {
-        const response = await fetch('./alerts.json');
-
-        // A 404 is a valid "no alerts" state if the file doesn't exist.
-        if (response.status === 404) {
-          console.log('alerts.json not found; defaulting to no alerts.');
-          setAlerts([]);
-          return;
-        }
+        const response = await fetch(ALERTS_SHEET_URL);
         
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error(`HTTP error fetching Google Sheet! status: ${response.status}`);
         }
         
-        const text = await response.text();
+        const csvText = await response.text();
         
-        // An empty file or a file with just whitespace is also a "no alerts" state.
-        if (text.trim() === '') {
+        if (csvText.trim() === '') {
           setAlerts([]);
           return;
         }
 
-        const data = JSON.parse(text);
+        const data = parseCsvToAlerts(csvText);
         setAlerts(data);
 
       } catch (e: any) {
-        // If anything fails (network error, malformed JSON), gracefully default
-        // to an empty list of alerts instead of showing a disruptive error message.
-        console.error("Failed to load or parse alerts.json; defaulting to no alerts.", e);
+        console.error("Failed to load or parse alerts from Google Sheet; defaulting to no alerts.", e);
         setAlerts([]);
-        // We do not set a user-facing error for this type of content issue.
+        setError("Could not retrieve school alerts at this time.");
       } finally {
         setIsLoading(false);
       }
@@ -99,10 +142,7 @@ function App() {
               path="/admin" 
               element={
                 isAuthenticated ? (
-                  <AdminPage 
-                    initialAlerts={alerts}
-                    onLogout={handleLogout} 
-                  />
+                  <AdminPage onLogout={handleLogout} />
                 ) : (
                   <LoginPage onLogin={handleLogin} />
                 )

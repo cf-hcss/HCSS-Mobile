@@ -19,6 +19,5 @@ export interface AlertItem {
 }
 
 export interface AdminPageProps {
-  initialAlerts: AlertItem[];
   onLogout: () => void;
 }
