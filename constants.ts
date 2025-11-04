@@ -1,4 +1,3 @@
-
 import type { LinkItem } from './types.ts';
 import { BookOpenIcon, CalendarIcon, EnvelopeIcon, UserGroupIcon, WalletIcon } from './components/icons.tsx';
 
@@ -7,15 +6,16 @@ export const ADMIN_PASSWORD = 'HCSSadmin2024!';
 // ===================================================================================
 // !! IMPORTANT !! - ALERTS CONFIGURATION
 // ===================================================================================
-// To enable dynamic alerts, replace the placeholder URL below.
+// To enable dynamic alerts, you can use this pre-configured sample URL or replace it.
 // INSTRUCTIONS:
 // 1. Create a Google Sheet with the exact headers (in any order): id, severity, title, message, date
 // 2. In the Google Sheet, go to File > Share > Publish to web.
 // 3. In the dialog, under "Link", select the specific sheet with your alerts.
 // 4. Change the format from "Web page" to "Comma-separated values (.csv)".
 // 5. Click the "Publish" button and copy the generated URL.
-// 6. Paste the copied URL below to replace the placeholder text.
-export const ALERTS_SHEET_URL = 'PASTE_YOUR_GOOGLE_SHEET_PUBLISH_URL_HERE';
+// 6. Paste your copied URL below to replace the sample URL.
+// Fix: Explicitly type ALERTS_SHEET_URL as string to prevent overly narrow type inference.
+export const ALERTS_SHEET_URL: string = 'https://gist.githubusercontent.com/ai-demos/f3724c93563914a1e9411964f028457c/raw/f1e756c9a9ad84a32a0c41031a00a40d5884a2d7/hcss-hub-alerts.csv';
 // ===================================================================================
 
 

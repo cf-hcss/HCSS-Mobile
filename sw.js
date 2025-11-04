@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'hcss-hub-cache-v7';
+const CACHE_NAME = 'hcss-hub-cache-v8';
 const urlsToCache = [
   './',
   './index.html',
@@ -19,30 +19,10 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
-  const requestUrl = new URL(event.request.url);
-
-  // Use a network-first strategy for alerts.json.
-  // This ensures the data is always fresh if the user is online.
-  if (requestUrl.pathname.endsWith('/alerts.json')) {
-    event.respondWith(
-      fetch(event.request).then(networkResponse => {
-        // If the fetch is successful, update the cache with the new version.
-        return caches.open(CACHE_NAME).then(cache => {
-          if (networkResponse.ok) {
-            cache.put(event.request, networkResponse.clone());
-          }
-          return networkResponse;
-        });
-      }).catch(() => {
-        // If the fetch fails (e.g., user is offline), try to serve from the cache.
-        return caches.match(event.request);
-      })
-    );
-    return;
-  }
-
-  // Use a cache-first strategy for all other (app shell) requests.
-  // This makes the app load quickly.
+  // Use a cache-first strategy for all app shell requests.
+  // This makes the app load quickly. For dynamic content like the
+  // Google Sheet, the request will not be in the cache and will
+  // proceed to the network, which is the desired behavior.
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
       return cachedResponse || fetch(event.request);
