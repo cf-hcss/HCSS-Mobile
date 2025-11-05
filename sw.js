@@ -1,5 +1,5 @@
 
-const CACHE_NAME = 'hcss-hub-cache-v8';
+const CACHE_NAME = 'hcss-hub-cache-v9'; // Bumped version to trigger update
 const urlsToCache = [
   './',
   './index.html',
@@ -19,10 +19,17 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
-  // Use a cache-first strategy for all app shell requests.
-  // This makes the app load quickly. For dynamic content like the
-  // Google Sheet, the request will not be in the cache and will
-  // proceed to the network, which is the desired behavior.
+  const requestUrl = new URL(event.request.url);
+
+  // If the request is for the Google GenAI API, always go to the network.
+  // This prevents the service worker from caching API requests, which is crucial for dynamic content.
+  if (requestUrl.hostname === 'generativelanguage.googleapis.com') {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
+  // For all other requests, use a cache-first strategy.
+  // This makes the app load quickly from the cache.
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
       return cachedResponse || fetch(event.request);
