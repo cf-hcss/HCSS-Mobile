@@ -32,7 +32,7 @@ export const ALERTS_SHEET_EDIT_URL: string = 'https://docs.google.com/spreadshee
 
 // STEP 3: Paste your "Publish to web" CSV link here.
 // This is the link the app fetches data from.
-export const ALERTS_SHEET_CSV_URL: string = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTh8nY_7LfpcsClqB0jLLiIYML98crfvBxjy6GG2ZHXQ8sx3yVGLEziPRz3rDLk_pVyWSRUy8GsZV7T/pub?output=csv';
+export const ALERTS_SHEET_CSV_URL: string = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5F_tS5Z-eB-lqY5a-v-9K_F-2X_E4j_7f_0b-9O_u-rP_oA-2e-7Z-5B_8F_6k_3kX/pub?output=csv';
 // ===================================================================================
 
 
