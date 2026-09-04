@@ -1,21 +1,64 @@
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react';
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { 
-    PaperAirplaneIcon,
-    PowerIcon,
-    ArrowPathIcon,
-    MinusIcon,
-    WindowIcon,
-    ExclamationTriangleIcon
+import {
+  PaperAirplaneIcon,
+  PowerIcon,
+  ArrowPathIcon,
+  MinusIcon,
+  WindowIcon,
+  ExclamationTriangleIcon,
+  SparklesIcon,
 } from '../components/icons.tsx';
+
 import { Chat } from '@google/genai';
 import { gemini, isAiConfigured } from '../api.ts';
 
-
 interface ChatMessage {
-    role: 'user' | 'model';
-    text: string;
+  role: 'user' | 'model';
+  text: string;
 }
+
+const aiStyles = `
+  @keyframes aiFloat {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  @keyframes aiPulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: .8;
+    }
+    50% {
+      transform: scale(1.12);
+      opacity: 1;
+    }
+  }
+
+  .ai-floating-window {
+    animation: aiFloat 6s ease-in-out infinite;
+  }
+
+  .ai-pulse {
+    animation: aiPulse 3s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ai-floating-window,
+    .ai-pulse {
+      animation: none !important;
+    }
+  }
+`;
 
 const AcademicsPage: React.FC = () => {
   const [chat, setChat] = useState<Chat | null>(null);
@@ -24,33 +67,34 @@ const AcademicsPage: React.FC = () => {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
   const [isMinimized, setIsMinimized] = useState(false);
+
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const systemInstruction = `You are Hub AI, an AI resource for students of Hampden Charter School of Science. Your goal is to be a helpful, safe, and engaging learning partner.
 
 **Core Directives:**
-1.  **Knowledge & Expertise:** Your primary role is to assist with academic subjects. You have deep knowledge in areas like **Literature** (analyzing texts, explaining literary devices, providing book summaries) and **History** (explaining events, figures, and concepts). You can also help with math, science, and other subjects.
-2.  **Friendly & Professional Tone:** You should be friendly and approachable, but always maintain a professional and educational tone. Your answers must be clear, simple, and to the point. You can engage in light chitchat (like saying hello), but your main focus should always be on providing helpful academic support. Avoid slang and overly casual language.
-3.  **Factual HCSS Information:** You must provide accurate, factual information about HCSS based ONLY on the details provided below. Do not use external knowledge or guess when answering questions about the school.
-4.  **Handling Off-Topic Questions:** If a question is significantly outside your academic/HCSS scope (e.g., personal opinions, pop culture, complex personal advice), you should gently redirect by saying: 'That's an interesting question! However, my main purpose is to help with academic subjects. Do you have a question about schoolwork I can help with?'
+1. **Knowledge & Expertise:** Your primary role is to assist with academic subjects. You have deep knowledge in areas like Literature and History. You can also help with math, science, and other subjects.
+2. **Friendly & Professional Tone:** Be friendly, approachable, professional, educational, clear, simple, and to the point.
+3. **Factual HCSS Information:** Provide accurate information about HCSS based ONLY on the details provided below.
+4. **Handling Off-Topic Questions:** If a question is significantly outside your academic/HCSS scope, gently redirect the student toward academic help.
 
-**Absolute Safety Restrictions (Non-Negotiable):**
-*   **ZERO TOLERANCE for Inappropriate Content:** You are strictly forbidden from generating, using, or responding to any curse words, profanity, sexual content, hate speech, violence, or any other inappropriate or unsafe topics.
-*   **FIRM REFUSAL:** If a user's request contains any forbidden content or asks for it, you MUST immediately and politely refuse. Respond with: "I cannot process requests that involve inappropriate language or topics. My purpose is to maintain a safe and respectful learning environment for everyone." Do not lecture the user; just state your refusal and purpose.
+**Absolute Safety Restrictions:**
+* Do not generate inappropriate, unsafe, sexual, hateful, violent, or profane content.
+* If a request involves inappropriate content, politely refuse and maintain a safe educational environment.
 
-**Authoritative HCSS Facts (Use ONLY this information):**
-*   **Official Website:** The one and only official website is https://hampdencharter.org.
-*   **High School:** Hampden Charter School of Science - East (High School). Address: 511 Main Street, Chicopee, MA 01020.
-*   **Middle School:** Hampden Charter School of Science - West (Middle School). Address: 20 Johnson Road, West Springfield, MA 01089.
+**Authoritative HCSS Facts:**
+* Official Website: https://hampdencharter.org
+* High School: Hampden Charter School of Science - East. 511 Main Street, Chicopee, MA 01020.
+* Middle School: Hampden Charter School of Science - West. 20 Johnson Road, West Springfield, MA 01089.
 
 **Error Correction Protocol:**
-*   If you make a mistake and a user corrects you, you MUST apologize and accept the correction. Acknowledge the user's correct information and confirm you will use it.
-*   Example: 'You are absolutely correct, my apologies. Thank you for the correction. The official website is indeed https://hampdencharter.org. I will ensure my information is accurate moving forward.'
-*   If the user asks *why* you were wrong, respond: 'My apologies for the error. As an AI, I'm always learning, and I appreciate you helping me improve. I will strive to provide more accurate information based on my programming.'`;
+If you make a mistake and the user corrects you, apologize, accept the correction, and use the corrected information.`;
 
   const initializeChat = useCallback(() => {
     if (!isAiConfigured || !gemini) {
-      setAiError("Hub AI is not available. The feature has not been configured by the administrator.");
+      setAiError(
+        'Hub AI is not available. The feature has not been configured by the administrator.'
+      );
       setChat(null);
       setChatHistory([]);
       return;
@@ -59,62 +103,98 @@ const AcademicsPage: React.FC = () => {
     try {
       setAiError(null);
       setIsAiLoading(true);
+
       const chatSession = gemini.chats.create({
-          model: 'gemini-2.5-pro',
-          config: {
-              systemInstruction: systemInstruction,
-          },
+        model: 'gemini-2.5-pro',
+        config: {
+          systemInstruction,
+        },
       });
+
       setChat(chatSession);
-      setChatHistory([{
+
+      setChatHistory([
+        {
           role: 'model',
-          text: "Hello! I am Hub AI. How can I help you with your studies today?"
-      }]);
-    } catch (e: any) {
-        console.error("Failed to initialize AI Chat:", e);
-        setAiError("Could not start the AI chat session. Please check the connection or API key setup.");
-        setChat(null);
-        setChatHistory([]);
+          text: 'Hello! I am Hub AI. How can I help you with your studies today?',
+        },
+      ]);
+    } catch (e) {
+      console.error('Failed to initialize AI Chat:', e);
+
+      setAiError(
+        'Could not start the AI chat session. Please check the connection or API key setup.'
+      );
+
+      setChat(null);
+      setChatHistory([]);
     } finally {
-        setIsAiLoading(false);
+      setIsAiLoading(false);
     }
   }, []);
-  
-  // Initialize Chat on component mount
+
   useEffect(() => {
     initializeChat();
   }, [initializeChat]);
 
-
-  // Effect to scroll to the bottom of the chat on new messages
   useEffect(() => {
     if (chatContainerRef.current) {
-        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
   }, [chatHistory, isAiLoading]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
+  const handleSendMessage = async (
+    e: React.FormEvent
+  ) => {
     e.preventDefault();
-    if (!userInput.trim() || isAiLoading || !chat) return;
 
-    const newUserMessage: ChatMessage = { role: 'user', text: userInput };
-    setChatHistory(prev => [...prev, newUserMessage]);
+    if (!userInput.trim() || isAiLoading || !chat) {
+      return;
+    }
+
     const currentInput = userInput;
+
+    setChatHistory((prev) => [
+      ...prev,
+      {
+        role: 'user',
+        text: currentInput,
+      },
+    ]);
+
     setUserInput('');
     setIsAiLoading(true);
     setAiError(null);
 
     try {
-        const result = await chat.sendMessage({ message: currentInput });
-        const modelResponse: ChatMessage = { role: 'model', text: result.text };
-        setChatHistory(prev => [...prev, modelResponse]);
-    } catch (e: any) {
-        console.error("Error sending message:", e);
-        const errorMessage: ChatMessage = { role: 'model', text: "I'm having a little trouble connecting right now. Please check your internet connection and try again in a moment." };
-        setChatHistory(prev => [...prev, errorMessage]);
-        setAiError("Failed to get a response from the AI.");
+      const result = await chat.sendMessage({
+        message: currentInput,
+      });
+
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          role: 'model',
+          text: result.text,
+        },
+      ]);
+    } catch (e) {
+      console.error('Error sending message:', e);
+
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          role: 'model',
+          text: "I'm having trouble connecting right now. Please try again in a moment.",
+        },
+      ]);
+
+      setAiError(
+        'Failed to get a response from the AI.'
+      );
     } finally {
-        setIsAiLoading(false);
+      setIsAiLoading(false);
     }
   };
 
@@ -122,126 +202,469 @@ const AcademicsPage: React.FC = () => {
     setChat(null);
     setChatHistory([]);
     initializeChat();
-  }
+  };
 
   const handleEndChat = () => {
     setChat(null);
     setChatHistory([]);
-  }
-  
+  };
+
   const handleMinimizeToggle = () => {
-      setIsMinimized(!isMinimized);
-  }
+    setIsMinimized((prev) => !prev);
+  };
 
   const renderContent = () => {
     if (!isAiConfigured) {
-        return (
-             <div className="flex-grow flex flex-col items-center justify-center p-6 text-center bg-yellow-50/50 rounded-b-lg">
-                <ExclamationTriangleIcon className="h-10 w-10 text-yellow-500 mb-4" />
-                <h4 className="font-bold text-yellow-800">Feature Not Available</h4>
-                <p className="text-yellow-700 text-sm">
-                    Hub AI has not been configured by the administrator. An API key is required.
-                </p>
-             </div>
-        );
-    }
-    
-    if (aiError && chatHistory.length === 0) {
       return (
-        <div className="flex-grow flex items-center justify-center p-4 text-center">
-            <p className="text-red-500">{aiError}</p>
+        <div
+          style={{
+            flex: 1,
+            padding: '40px 20px',
+            textAlign: 'center',
+          }}
+        >
+          <ExclamationTriangleIcon
+            style={{
+              width: '40px',
+              height: '40px',
+              margin: '0 auto 14px',
+              color: '#d97706',
+            }}
+          />
+
+          <strong style={{ color: '#92400e' }}>
+            Feature Not Available
+          </strong>
+
+          <p
+            style={{
+              color: '#a16207',
+              fontSize: '13px',
+            }}
+          >
+            Hub AI has not been configured by the administrator.
+          </p>
         </div>
       );
     }
-    
+
+    if (aiError && chatHistory.length === 0) {
+      return (
+        <div
+          style={{
+            flex: 1,
+            padding: '40px 20px',
+            textAlign: 'center',
+            color: '#881c1c',
+          }}
+        >
+          {aiError}
+        </div>
+      );
+    }
+
     if (!chat) {
       return (
-          <div className="flex-grow flex flex-col items-center justify-center p-4 text-center">
-              <p className="mb-4 text-gray-600">Chat session ended.</p>
-              <button 
-                  onClick={initializeChat}
-                  className="px-4 py-2 bg-brand-navy text-white font-semibold rounded-lg shadow-md hover:bg-brand-navy-light transition-colors"
-              >
-                  Start New Chat
-              </button>
+        <div
+          style={{
+            flex: 1,
+            padding: '45px 20px',
+            textAlign: 'center',
+          }}
+        >
+          <p style={{ color: '#64748b' }}>
+            Chat session ended.
+          </p>
+
+          <button
+            onClick={initializeChat}
+            style={{
+              border: 'none',
+              borderRadius: '18px',
+              padding: '12px 18px',
+              background: '#0d243e',
+              color: '#ffffff',
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
+          >
+            Start New Chat
+          </button>
         </div>
       );
     }
 
     return (
-        <>
-            <div ref={chatContainerRef} className="flex-grow overflow-y-auto p-4 space-y-4 bg-slate-50/50">
-                {chatHistory.map((msg, index) => (
-                    <div key={index} className={`flex items-end ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-2.5 rounded-2xl shadow-sm ${msg.role === 'user' ? 'bg-gradient-to-br from-brand-navy to-blue-800 text-white' : 'bg-slate-200 text-gray-800'}`}>
-                           <p className="whitespace-pre-wrap">{msg.text}</p>
-                        </div>
-                    </div>
-                ))}
-                {isAiLoading && chatHistory.length > 0 && (
-                    <div className="flex justify-start">
-                        <div className="max-w-xs md:max-w-md lg:max-w-lg px-4 py-2 rounded-2xl bg-slate-200 text-gray-800">
-                        <div className="flex items-center space-x-1">
-                                <span className="h-2 w-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                                <span className="h-2 w-2 bg-gray-500 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                                <span className="h-2 w-2 bg-gray-500 rounded-full animate-bounce"></span>
-                            </div>
-                        </div>
-                    </div>
-                )}
+      <>
+        <div
+          ref={chatContainerRef}
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '18px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '14px',
+            background:
+              'linear-gradient(180deg, rgba(248,250,252,.8), rgba(241,245,249,.55))',
+          }}
+        >
+          {chatHistory.map((msg, index) => (
+            <div
+              key={index}
+              style={{
+                display: 'flex',
+                justifyContent:
+                  msg.role === 'user'
+                    ? 'flex-end'
+                    : 'flex-start',
+              }}
+            >
+              <div
+                style={{
+                  maxWidth: '78%',
+                  padding: '12px 15px',
+                  borderRadius:
+                    msg.role === 'user'
+                      ? '22px 22px 6px 22px'
+                      : '22px 22px 22px 6px',
+
+                  color:
+                    msg.role === 'user'
+                      ? '#ffffff'
+                      : '#0d243e',
+
+                  background:
+                    msg.role === 'user'
+                      ? 'linear-gradient(135deg, #0d243e, #234f7c)'
+                      : 'rgba(255,255,255,.92)',
+
+                  boxShadow:
+                    '0 8px 22px rgba(13,36,62,.09)',
+
+                  fontSize: '14px',
+                  lineHeight: 1.5,
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
+                {msg.text}
+              </div>
             </div>
-            {/* Chat Input */}
-            <form onSubmit={handleSendMessage} className="flex-shrink-0 flex items-center space-x-2 p-3 border-t border-gray-200">
-                <input
-                    type="text"
-                    value={userInput}
-                    onChange={(e) => setUserInput(e.target.value)}
-                    placeholder="Ask an academic question..."
-                    className="w-full bg-slate-100 text-gray-800 rounded-full py-2.5 px-4 border border-gray-300 focus:ring-2 focus:ring-brand-navy focus:border-brand-navy transition-colors"
-                    disabled={isAiLoading || !chat}
-                />
-                <button
-                    type="submit"
-                    className="bg-brand-navy text-white p-3 rounded-full disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-opacity-90 transition-colors flex-shrink-0"
-                    disabled={isAiLoading || !userInput.trim() || !chat}
-                    aria-label="Send message"
-                >
-                    <PaperAirplaneIcon className="h-5 w-5"/>
-                </button>
-            </form>
-        </>
+          ))}
+
+          {isAiLoading && (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-start',
+              }}
+            >
+              <div
+                style={{
+                  padding: '12px 16px',
+                  borderRadius: '22px',
+                  background: '#ffffff',
+                  color: '#64748b',
+                  boxShadow:
+                    '0 8px 22px rgba(13,36,62,.08)',
+                }}
+              >
+                Hub AI is thinking...
+              </div>
+            </div>
+          )}
+        </div>
+
+        <form
+          onSubmit={handleSendMessage}
+          style={{
+            padding: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '9px',
+            borderTop:
+              '1px solid rgba(13,36,62,.08)',
+            background:
+              'rgba(255,255,255,.88)',
+          }}
+        >
+          <input
+            type="text"
+            value={userInput}
+            onChange={(e) =>
+              setUserInput(e.target.value)
+            }
+            placeholder="Ask Hub AI..."
+            disabled={isAiLoading || !chat}
+            style={{
+              width: '100%',
+              border: '1px solid rgba(13,36,62,.10)',
+              borderRadius: '22px',
+              padding: '12px 16px',
+              outline: 'none',
+              background: '#f8fafc',
+              color: '#0d243e',
+              fontFamily: 'inherit',
+            }}
+          />
+
+          <button
+            type="submit"
+            disabled={
+              isAiLoading ||
+              !userInput.trim() ||
+              !chat
+            }
+            aria-label="Send message"
+            style={{
+              width: '45px',
+              height: '45px',
+              flexShrink: 0,
+              border: 'none',
+              borderRadius: '17px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background:
+                'linear-gradient(135deg, #7a1717, #a72b2b)',
+              color: '#ffffff',
+              cursor: 'pointer',
+              boxShadow:
+                '0 8px 20px rgba(136,28,28,.22)',
+            }}
+          >
+            <PaperAirplaneIcon
+              style={{
+                width: '20px',
+                height: '20px',
+              }}
+            />
+          </button>
+        </form>
+      </>
     );
   };
 
   return (
-    <div className="p-4 sm:p-6 max-w-4xl mx-auto text-center">
-      <h2 className="text-3xl font-bold text-brand-navy mb-2">HCSS Hub AI</h2>
-      <p className="text-gray-600 mb-8">Your personal academic assistant. Ask questions and get help with your studies.</p>
+    <>
+      <style>{aiStyles}</style>
 
-      <div className="bg-white rounded-xl shadow-xl w-full flex flex-col text-gray-800 transition-all duration-300 ease-in-out text-left border border-gray-200/80">
-        {/* Chat Header */}
-        <div className="flex-shrink-0 flex items-center justify-between p-3 border-b border-gray-200">
-          <h3 className="text-lg font-bold text-brand-navy">Hub AI</h3>
-          <div className="flex items-center space-x-1">
-             <button onClick={handleMinimizeToggle} className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors disabled:text-gray-300 disabled:hover:bg-transparent" title={isMinimized ? "Maximize" : "Minimize"} disabled={!isAiConfigured}>
-                {isMinimized ? <WindowIcon className="h-5 w-5" /> : <MinusIcon className="h-5 w-5" />}
-            </button>
-            <button onClick={handleNewChat} className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors disabled:text-gray-300 disabled:hover:bg-transparent" title="New Chat" disabled={!isAiConfigured}>
-                <ArrowPathIcon className="h-5 w-5" />
-            </button>
-            <button onClick={handleEndChat} className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors disabled:text-red-200 disabled:hover:bg-transparent" title="End Chat" disabled={!isAiConfigured}>
-                <PowerIcon className="h-5 w-5" />
-            </button>
+      <div
+        style={{
+          maxWidth: '820px',
+          margin: '0 auto',
+          padding: '20px 16px 115px',
+        }}
+      >
+        <div
+          style={{
+            textAlign: 'center',
+            marginBottom: '28px',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              marginBottom: '8px',
+            }}
+          >
+            <div
+              className="ai-pulse"
+              style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background:
+                  'linear-gradient(145deg, rgba(136,28,28,.12), rgba(13,36,62,.08))',
+              }}
+            >
+              <SparklesIcon
+                style={{
+                  width: '22px',
+                  height: '22px',
+                  color: '#881c1c',
+                }}
+              />
+            </div>
           </div>
+
+          <div
+            style={{
+              fontSize: '11px',
+              fontWeight: 700,
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              color: '#881c1c',
+            }}
+          >
+            Learning Assistant
+          </div>
+
+          <h1
+            style={{
+              margin: '5px 0 0',
+              fontSize: 'clamp(30px, 5vw, 44px)',
+              fontWeight: 900,
+              letterSpacing: '-1.5px',
+              color: '#0d243e',
+            }}
+          >
+            HCSS Hub AI
+          </h1>
+
+          <p
+            style={{
+              margin: '8px 0 0',
+              color: '#64748b',
+              fontSize: '14px',
+            }}
+          >
+            Ask questions and get help with your studies.
+          </p>
         </div>
 
-        {/* Chat Body */}
-        <div className={`flex-1 flex flex-col min-h-0 overflow-hidden transition-all duration-300 ease-in-out ${isMinimized ? 'max-h-0' : 'max-h-[65vh]'}`}>
-            {renderContent()}
+        <div
+          className="ai-floating-window"
+          style={{
+            width: '100%',
+            overflow: 'hidden',
+            borderRadius: '30px',
+
+            background:
+              'rgba(255,255,255,.94)',
+
+            border:
+              '1px solid rgba(13,36,62,.08)',
+
+            boxShadow:
+              '0 18px 45px rgba(13,36,62,.14)',
+
+            backdropFilter: 'blur(18px)',
+            WebkitBackdropFilter: 'blur(18px)',
+          }}
+        >
+          <div
+            style={{
+              minHeight: '64px',
+              padding: '12px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+
+              borderBottom:
+                '1px solid rgba(13,36,62,.08)',
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  fontSize: '15px',
+                  fontWeight: 800,
+                  color: '#0d243e',
+                }}
+              >
+                Hub AI
+              </div>
+
+              <div
+                style={{
+                  fontSize: '10px',
+                  color: '#64748b',
+                  marginTop: '2px',
+                }}
+              >
+                Academic support
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                gap: '4px',
+              }}
+            >
+              <button
+                onClick={handleMinimizeToggle}
+                disabled={!isAiConfigured}
+                title={
+                  isMinimized
+                    ? 'Maximize'
+                    : 'Minimize'
+                }
+                style={controlButtonStyle}
+              >
+                {isMinimized ? (
+                  <WindowIcon style={controlIconStyle} />
+                ) : (
+                  <MinusIcon style={controlIconStyle} />
+                )}
+              </button>
+
+              <button
+                onClick={handleNewChat}
+                disabled={!isAiConfigured}
+                title="New Chat"
+                style={controlButtonStyle}
+              >
+                <ArrowPathIcon
+                  style={controlIconStyle}
+                />
+              </button>
+
+              <button
+                onClick={handleEndChat}
+                disabled={!isAiConfigured}
+                title="End Chat"
+                style={{
+                  ...controlButtonStyle,
+                  color: '#881c1c',
+                }}
+              >
+                <PowerIcon
+                  style={controlIconStyle}
+                />
+              </button>
+            </div>
+          </div>
+
+          {!isMinimized && (
+            <div
+              style={{
+                height: 'min(540px, 62vh)',
+                minHeight: '380px',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              {renderContent()}
+            </div>
+          )}
         </div>
       </div>
-    </div>
+    </>
   );
+};
+
+const controlButtonStyle: React.CSSProperties = {
+  width: '38px',
+  height: '38px',
+  border: 'none',
+  borderRadius: '14px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  background: 'rgba(13,36,62,.05)',
+  color: '#64748b',
+  cursor: 'pointer',
+};
+
+const controlIconStyle: React.CSSProperties = {
+  width: '19px',
+  height: '19px',
 };
 
 export default AcademicsPage;
