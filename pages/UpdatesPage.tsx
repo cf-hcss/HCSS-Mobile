@@ -12,6 +12,23 @@ interface UpdateLink {
   icon: React.FC<React.SVGProps<SVGSVGElement>>;
 }
 
+const updateFloatStyle = `
+  @keyframes updateFloat {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .floating-update-card {
+      animation: none !important;
+    }
+  }
+`;
+
 const newsAndEventsLinks: UpdateLink[] = [
   {
     title: 'High School News',
@@ -59,6 +76,7 @@ const UpdateCard: React.FC<{ item: UpdateLink }> = ({ item }) => (
     href={item.href}
     target="_blank"
     rel="noopener noreferrer"
+    className="floating-update-card"
     style={{
       textDecoration: 'none',
       position: 'relative',
@@ -71,11 +89,21 @@ const UpdateCard: React.FC<{ item: UpdateLink }> = ({ item }) => (
       alignItems: 'center',
       justifyContent: 'center',
       gap: '12px',
+      animation: 'updateFloat 5s ease-in-out infinite',
       background:
-        'linear-gradient(145deg, rgba(255,255,255,0.96), rgba(246,248,252,0.92))',
+        'linear-gradient(145deg, rgba(255,255,255,0.97), rgba(246,248,252,0.93))',
       border: '1px solid rgba(13,36,62,0.08)',
       boxShadow:
         '0 12px 30px rgba(13,36,62,0.10), inset 0 1px 0 rgba(255,255,255,0.9)',
+      transition: 'box-shadow 0.25s ease',
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.boxShadow =
+        '0 18px 38px rgba(13,36,62,0.16)';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.boxShadow =
+        '0 12px 30px rgba(13,36,62,0.10), inset 0 1px 0 rgba(255,255,255,0.9)';
     }}
   >
     <div
@@ -88,6 +116,7 @@ const UpdateCard: React.FC<{ item: UpdateLink }> = ({ item }) => (
         justifyContent: 'center',
         background:
           'linear-gradient(145deg, rgba(136,28,28,0.10), rgba(13,36,62,0.06))',
+        boxShadow: '0 8px 20px rgba(13,36,62,0.08)',
       }}
     >
       <item.icon
@@ -122,112 +151,130 @@ const UpdateCard: React.FC<{ item: UpdateLink }> = ({ item }) => (
         {item.subtitle}
       </p>
     </div>
+
+    <div
+      style={{
+        position: 'absolute',
+        width: '78px',
+        height: '78px',
+        borderRadius: '50%',
+        right: '-28px',
+        bottom: '-30px',
+        background:
+          'radial-gradient(circle, rgba(136,28,28,0.10), transparent 70%)',
+        pointerEvents: 'none',
+      }}
+    />
   </a>
 );
 
 const UpdatesPage: React.FC = () => {
   return (
-    <div
-      style={{
-        maxWidth: '900px',
-        margin: '0 auto',
-        padding: '20px 16px 110px',
-      }}
-    >
+    <>
+      <style>{updateFloatStyle}</style>
+
       <div
         style={{
-          textAlign: 'center',
-          marginBottom: '30px',
+          maxWidth: '900px',
+          margin: '0 auto',
+          padding: '20px 16px 110px',
         }}
       >
         <div
           style={{
-            fontSize: '12px',
-            fontWeight: 700,
-            letterSpacing: '2px',
-            textTransform: 'uppercase',
-            color: '#881c1c',
-            marginBottom: '6px',
+            textAlign: 'center',
+            marginBottom: '30px',
           }}
         >
-          Stay Connected
+          <div
+            style={{
+              fontSize: '12px',
+              fontWeight: 700,
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              color: '#881c1c',
+              marginBottom: '6px',
+            }}
+          >
+            Stay Connected
+          </div>
+
+          <h1
+            style={{
+              margin: 0,
+              fontSize: 'clamp(30px, 5vw, 44px)',
+              fontWeight: 900,
+              letterSpacing: '-1.5px',
+              color: '#0d243e',
+            }}
+          >
+            HCSS Updates
+          </h1>
+
+          <p
+            style={{
+              marginTop: '10px',
+              color: '#64748b',
+              fontSize: '15px',
+            }}
+          >
+            News, events, and social updates in one place.
+          </p>
         </div>
 
-        <h1
-          style={{
-            margin: 0,
-            fontSize: 'clamp(30px, 5vw, 44px)',
-            fontWeight: 900,
-            letterSpacing: '-1.5px',
-            color: '#0d243e',
-          }}
-        >
-          HCSS Updates
-        </h1>
+        <section style={{ marginBottom: '32px' }}>
+          <h2
+            style={{
+              fontSize: '18px',
+              fontWeight: 800,
+              color: '#0d243e',
+              marginBottom: '14px',
+            }}
+          >
+            News & Events
+          </h2>
 
-        <p
-          style={{
-            marginTop: '10px',
-            color: '#64748b',
-            fontSize: '15px',
-          }}
-        >
-          News, events, and social updates in one place.
-        </p>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns:
+                'repeat(auto-fit, minmax(160px, 1fr))',
+              gap: '16px',
+            }}
+          >
+            {newsAndEventsLinks.map((item) => (
+              <UpdateCard key={item.title} item={item} />
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h2
+            style={{
+              fontSize: '18px',
+              fontWeight: 800,
+              color: '#0d243e',
+              marginBottom: '14px',
+            }}
+          >
+            Follow Us
+          </h2>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns:
+                'repeat(auto-fit, minmax(160px, 1fr))',
+              gap: '16px',
+            }}
+          >
+            {socialLinks.map((item) => (
+              <UpdateCard key={item.title} item={item} />
+            ))}
+          </div>
+        </section>
       </div>
-
-      <section style={{ marginBottom: '32px' }}>
-        <h2
-          style={{
-            fontSize: '18px',
-            fontWeight: 800,
-            color: '#0d243e',
-            marginBottom: '14px',
-          }}
-        >
-          News & Events
-        </h2>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns:
-              'repeat(auto-fit, minmax(160px, 1fr))',
-            gap: '16px',
-          }}
-        >
-          {newsAndEventsLinks.map((item) => (
-            <UpdateCard key={item.title} item={item} />
-          ))}
-        </div>
-      </section>
-
-      <section>
-        <h2
-          style={{
-            fontSize: '18px',
-            fontWeight: 800,
-            color: '#0d243e',
-            marginBottom: '14px',
-          }}
-        >
-          Follow Us
-        </h2>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns:
-              'repeat(auto-fit, minmax(160px, 1fr))',
-            gap: '16px',
-          }}
-        >
-          {socialLinks.map((item) => (
-            <UpdateCard key={item.title} item={item} />
-          ))}
-        </div>
-      </section>
-    </div>
+    </>
   );
 };
 
