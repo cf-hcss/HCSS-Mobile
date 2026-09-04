@@ -99,27 +99,138 @@ const HomePage: React.FC<HomePageProps> = ({ alerts, isLoading, error }) => {
       return null;
     }
     
-    if (latestCriticalAlert && isBannerVisible) {
-      return (
-        <div className="bg-brand-burgundy text-left text-white p-4 rounded-lg shadow-lg mb-6 flex items-start justify-between space-x-4">
-          <div className="flex items-start space-x-3">
-            <ExclamationTriangleIcon className="h-8 w-8 flex-shrink-0 mt-1" />
-            <div>
-              <h3 className="font-bold text-lg">{latestCriticalAlert.title}</h3>
-              <p className="text-sm">{latestCriticalAlert.message}</p>
-              <p className="text-xs opacity-80 mt-1">{latestCriticalAlert.date}</p>
-            </div>
-          </div>
-          <button
-            onClick={() => setIsBannerVisible(false)}
-            className="p-1 rounded-full hover:bg-white/20 transition-colors flex-shrink-0"
-            aria-label="Dismiss alert"
-          >
-            <XMarkIcon className="h-5 w-5" />
-          </button>
+   if (latestCriticalAlert && isBannerVisible) {
+  return (
+    <div
+      style={{
+        position: 'relative',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '16px',
+        textAlign: 'left',
+        padding: '18px 20px',
+        marginBottom: '28px',
+        borderRadius: '26px',
+        color: '#ffffff',
+        background:
+          'linear-gradient(135deg, #741717 0%, #9b2424 55%, #6e1515 100%)',
+        border: '1px solid rgba(255,255,255,0.16)',
+        boxShadow:
+          '0 16px 35px rgba(136,28,28,0.20), inset 0 1px 0 rgba(255,255,255,0.16)',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16px',
+          position: 'relative',
+          zIndex: 2,
+        }}
+      >
+        <div
+          style={{
+            width: '52px',
+            height: '52px',
+            flexShrink: 0,
+            borderRadius: '18px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(255,255,255,0.12)',
+            border: '1px solid rgba(255,255,255,0.18)',
+          }}
+        >
+          <ExclamationTriangleIcon className="h-7 w-7" />
         </div>
-      );
-    }
+
+        <div>
+          <div
+            style={{
+              fontSize: '10px',
+              fontWeight: 700,
+              letterSpacing: '1.6px',
+              textTransform: 'uppercase',
+              opacity: 0.7,
+              marginBottom: '4px',
+            }}
+          >
+            Important Alert
+          </div>
+
+          <h3
+            style={{
+              margin: 0,
+              fontSize: 'clamp(18px, 4vw, 23px)',
+              fontWeight: 800,
+              lineHeight: 1.15,
+            }}
+          >
+            {latestCriticalAlert.title}
+          </h3>
+
+          <p
+            style={{
+              margin: '5px 0 0',
+              fontSize: '14px',
+              opacity: 0.9,
+            }}
+          >
+            {latestCriticalAlert.message}
+          </p>
+
+          <p
+            style={{
+              margin: '5px 0 0',
+              fontSize: '11px',
+              opacity: 0.6,
+            }}
+          >
+            {latestCriticalAlert.date}
+          </p>
+        </div>
+      </div>
+
+      <button
+        onClick={() => setIsBannerVisible(false)}
+        aria-label="Dismiss alert"
+        style={{
+          width: '38px',
+          height: '38px',
+          flexShrink: 0,
+          border: 'none',
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#ffffff',
+          background: 'rgba(255,255,255,0.12)',
+          cursor: 'pointer',
+          position: 'relative',
+          zIndex: 2,
+        }}
+      >
+        <XMarkIcon className="h-5 w-5" />
+      </button>
+
+      <div
+        style={{
+          position: 'absolute',
+          width: '150px',
+          height: '150px',
+          borderRadius: '50%',
+          right: '-50px',
+          top: '-80px',
+          background:
+            'radial-gradient(circle, rgba(255,255,255,0.16), transparent 70%)',
+          pointerEvents: 'none',
+        }}
+      />
+    </div>
+  );
+}
     return null;
   }
 
