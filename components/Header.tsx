@@ -2,7 +2,7 @@ import React from 'react';
 
 const Header: React.FC = () => {
   return (
-    <header className="px-4 pt-4">
+    <header style={{ padding: '16px 16px 0' }}>
       <div
         style={{
           maxWidth: '1100px',
@@ -12,10 +12,8 @@ const Header: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           gap: '14px',
-          background:
-            'linear-gradient(135deg, rgba(13,36,62,0.98), rgba(23,58,94,0.94))',
-          boxShadow: '0 14px 40px rgba(13,36,62,0.22)',
-          border: '1px solid rgba(255,255,255,0.16)',
+          background: 'linear-gradient(135deg, #0d243e, #173a5e)',
+          boxShadow: '0 14px 40px rgba(13,36,62,0.25)',
         }}
       >
         <div
@@ -23,12 +21,10 @@ const Header: React.FC = () => {
             width: '54px',
             height: '54px',
             borderRadius: '18px',
-            background: 'rgba(255,255,255,0.96)',
+            background: '#ffffff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 6px 18px rgba(0,0,0,0.18)',
-            flexShrink: 0,
           }}
         >
           <img
@@ -45,10 +41,9 @@ const Header: React.FC = () => {
         <div>
           <div
             style={{
-              color: 'white',
+              color: '#ffffff',
               fontSize: '22px',
               fontWeight: 700,
-              lineHeight: 1.1,
             }}
           >
             HCSS Hub
@@ -56,9 +51,8 @@ const Header: React.FC = () => {
 
           <div
             style={{
-              color: 'rgba(255,255,255,0.72)',
+              color: 'rgba(255,255,255,0.7)',
               fontSize: '11px',
-              marginTop: '4px',
             }}
           >
             Hampden Charter School of Science
