@@ -1,5 +1,9 @@
 import React from 'react';
-import { HCSS_LOGO_BASE64 } from '../assets.ts';
+<img
+  src="/hcss-logo.png"
+  alt="HCSS Logo"
+  className="h-12 w-12 object-contain"
+/>
 
 const Header: React.FC = () => {
   return (
