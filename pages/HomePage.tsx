@@ -4,6 +4,17 @@ import type { LinkItem, AlertItem } from '../types.ts';
 import { IMPORTANT_LINKS } from '../constants.ts';
 import { ExclamationTriangleIcon, XMarkIcon } from '../components/icons.tsx';
 
+const cardFloatStyle = `
+  @keyframes cardFloat {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+`;
+
 const LinkCard: React.FC<{ item: LinkItem }> = ({ item }) => (
   <a
     href={item.href}
@@ -17,6 +28,7 @@ const LinkCard: React.FC<{ item: LinkItem }> = ({ item }) => (
       padding: '22px 16px',
       minHeight: '150px',
       display: 'flex',
+      animation: 'cardFloat 5s ease-in-out infinite',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
@@ -89,6 +101,9 @@ interface HomePageProps {
 }
 
 const HomePage: React.FC<HomePageProps> = ({ alerts, isLoading, error }) => {
+    const floatingCardStyle = {
+    animation: 'cardFloat 5s ease-in-out infinite',
+  };
   const [isBannerVisible, setIsBannerVisible] = useState(true);
   const latestCriticalAlert = alerts.find(alert => alert.severity === 'Critical');
 
@@ -101,7 +116,7 @@ const HomePage: React.FC<HomePageProps> = ({ alerts, isLoading, error }) => {
     
    if (latestCriticalAlert && isBannerVisible) {
   return (
-    <div
+    <div <style>{cardFloatStyle}</style>
       style={{
         position: 'relative',
         overflow: 'hidden',
