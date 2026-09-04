@@ -18,7 +18,7 @@ const updateFloatStyle = `
       transform: translateY(0px);
     }
     50% {
-      transform: translateY(-5px);
+      transform: translateY(-6px);
     }
   }
 
@@ -71,7 +71,10 @@ const socialLinks: UpdateLink[] = [
   },
 ];
 
-const UpdateCard: React.FC<{ item: UpdateLink }> = ({ item }) => (
+const UpdateCard: React.FC<{
+  item: UpdateLink;
+  index: number;
+}> = ({ item, index }) => (
   <a
     href={item.href}
     target="_blank"
@@ -81,20 +84,28 @@ const UpdateCard: React.FC<{ item: UpdateLink }> = ({ item }) => (
       textDecoration: 'none',
       position: 'relative',
       overflow: 'hidden',
-      padding: '20px',
+
       borderRadius: '26px',
-      minHeight: '145px',
+      padding: '22px 16px',
+      minHeight: '150px',
+
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '12px',
-      animation: 'updateFloat 5s ease-in-out infinite',
+      gap: '14px',
+
+      animation: 'updateFloat 4.5s ease-in-out infinite',
+      animationDelay: `${index * 0.35}s`,
+
       background:
-        'linear-gradient(145deg, rgba(255,255,255,0.97), rgba(246,248,252,0.93))',
+        'linear-gradient(145deg, rgba(255,255,255,0.96), rgba(246,248,252,0.92))',
+
       border: '1px solid rgba(13,36,62,0.08)',
+
       boxShadow:
         '0 12px 30px rgba(13,36,62,0.10), inset 0 1px 0 rgba(255,255,255,0.9)',
+
       transition: 'box-shadow 0.25s ease',
     }}
     onMouseEnter={(e) => {
@@ -108,21 +119,24 @@ const UpdateCard: React.FC<{ item: UpdateLink }> = ({ item }) => (
   >
     <div
       style={{
-        width: '56px',
-        height: '56px',
+        width: '58px',
+        height: '58px',
         borderRadius: '20px',
+
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+
         background:
           'linear-gradient(145deg, rgba(136,28,28,0.10), rgba(13,36,62,0.06))',
+
         boxShadow: '0 8px 20px rgba(13,36,62,0.08)',
       }}
     >
       <item.icon
         style={{
-          width: '26px',
-          height: '26px',
+          width: '27px',
+          height: '27px',
           color: '#881c1c',
         }}
       />
@@ -135,6 +149,7 @@ const UpdateCard: React.FC<{ item: UpdateLink }> = ({ item }) => (
           fontSize: '15px',
           fontWeight: 800,
           color: '#0d243e',
+          lineHeight: 1.25,
         }}
       >
         {item.title}
@@ -142,7 +157,7 @@ const UpdateCard: React.FC<{ item: UpdateLink }> = ({ item }) => (
 
       <p
         style={{
-          margin: '5px 0 0',
+          margin: '6px 0 0',
           fontSize: '12px',
           color: '#64748b',
           lineHeight: 1.4,
@@ -155,13 +170,15 @@ const UpdateCard: React.FC<{ item: UpdateLink }> = ({ item }) => (
     <div
       style={{
         position: 'absolute',
-        width: '78px',
-        height: '78px',
+        width: '70px',
+        height: '70px',
         borderRadius: '50%',
-        right: '-28px',
-        bottom: '-30px',
+        right: '-24px',
+        bottom: '-28px',
+
         background:
-          'radial-gradient(circle, rgba(136,28,28,0.10), transparent 70%)',
+          'radial-gradient(circle, rgba(136,28,28,0.12), transparent 70%)',
+
         pointerEvents: 'none',
       }}
     />
@@ -177,7 +194,7 @@ const UpdatesPage: React.FC = () => {
         style={{
           maxWidth: '900px',
           margin: '0 auto',
-          padding: '20px 16px 110px',
+          padding: '20px 16px 115px',
         }}
       >
         <div
@@ -222,13 +239,13 @@ const UpdatesPage: React.FC = () => {
           </p>
         </div>
 
-        <section style={{ marginBottom: '32px' }}>
+        <section style={{ marginBottom: '34px' }}>
           <h2
             style={{
               fontSize: '18px',
               fontWeight: 800,
               color: '#0d243e',
-              marginBottom: '14px',
+              marginBottom: '16px',
             }}
           >
             News & Events
@@ -238,12 +255,16 @@ const UpdatesPage: React.FC = () => {
             style={{
               display: 'grid',
               gridTemplateColumns:
-                'repeat(auto-fit, minmax(160px, 1fr))',
+                'repeat(auto-fit, minmax(150px, 1fr))',
               gap: '16px',
             }}
           >
-            {newsAndEventsLinks.map((item) => (
-              <UpdateCard key={item.title} item={item} />
+            {newsAndEventsLinks.map((item, index) => (
+              <UpdateCard
+                key={item.title}
+                item={item}
+                index={index}
+              />
             ))}
           </div>
         </section>
@@ -254,7 +275,7 @@ const UpdatesPage: React.FC = () => {
               fontSize: '18px',
               fontWeight: 800,
               color: '#0d243e',
-              marginBottom: '14px',
+              marginBottom: '16px',
             }}
           >
             Follow Us
@@ -264,12 +285,16 @@ const UpdatesPage: React.FC = () => {
             style={{
               display: 'grid',
               gridTemplateColumns:
-                'repeat(auto-fit, minmax(160px, 1fr))',
+                'repeat(auto-fit, minmax(150px, 1fr))',
               gap: '16px',
             }}
           >
-            {socialLinks.map((item) => (
-              <UpdateCard key={item.title} item={item} />
+            {socialLinks.map((item, index) => (
+              <UpdateCard
+                key={item.title}
+                item={item}
+                index={index + 4}
+              />
             ))}
           </div>
         </section>
