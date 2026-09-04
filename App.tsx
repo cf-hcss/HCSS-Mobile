@@ -1,5 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import {
+  HashRouter,
+  Navigate,
+  Route,
+  Routes,
+} from 'react-router-dom';
 
 import Header from './components/Header.tsx';
 import BottomNav from './components/BottomNav.tsx';
@@ -28,8 +33,8 @@ import type {
 const parseCSV = (text: string): string[][] => {
   const rows: string[][] = [];
 
-  let row: string[] = [];
-  let value = '';
+  let currentRow: string[] = [];
+  let currentValue = '';
   let insideQuotes = false;
 
   for (let i = 0; i < text.length; i++) {
@@ -38,7 +43,7 @@ const parseCSV = (text: string): string[][] => {
 
     if (char === '"') {
       if (insideQuotes && nextChar === '"') {
-        value += '"';
+        currentValue += '"';
         i++;
       } else {
         insideQuotes = !insideQuotes;
@@ -48,108 +53,175 @@ const parseCSV = (text: string): string[][] => {
     }
 
     if (char === ',' && !insideQuotes) {
-      row.push(value.trim());
-      value = '';
+      currentRow.push(currentValue.trim());
+      currentValue = '';
       continue;
     }
 
-    if ((char === '\n' || char === '\r') && !insideQuotes) {
+    if (
+      (char === '\n' || char === '\r') &&
+      !insideQuotes
+    ) {
       if (char === '\r' && nextChar === '\n') {
         i++;
       }
 
-      row.push(value.trim());
+      currentRow.push(currentValue.trim());
 
-      if (row.some((cell) => cell !== '')) {
-        rows.push(row);
+      if (
+        currentRow.some(
+          (cell) => cell.trim() !== ''
+        )
+      ) {
+        rows.push(currentRow);
       }
 
-      row = [];
-      value = '';
+      currentRow = [];
+      currentValue = '';
       continue;
     }
 
-    value += char;
+    currentValue += char;
   }
 
-  row.push(value.trim());
+  currentRow.push(currentValue.trim());
 
-  if (row.some((cell) => cell !== '')) {
-    rows.push(row);
+  if (
+    currentRow.some(
+      (cell) => cell.trim() !== ''
+    )
+  ) {
+    rows.push(currentRow);
   }
 
   return rows;
 };
 
 
-const parseCsvToAlerts = (csvText: string): AlertItem[] => {
+const normalizeSeverity = (
+  value: string
+): AlertSeverity => {
+  const severity = value
+    .trim()
+    .toLowerCase();
+
+  if (severity === 'critical') {
+    return 'Critical';
+  }
+
+  if (severity === 'warning') {
+    return 'Warning';
+  }
+
+  return 'Info';
+};
+
+
+const parseCsvToAlerts = (
+  csvText: string
+): AlertItem[] => {
   try {
     const rows = parseCSV(csvText);
 
     if (rows.length < 2) {
-      return [];
-    }
-
-    const headers = rows[0].map((header) =>
-      header.trim().toLowerCase()
-    );
-
-    const idIndex = headers.indexOf('id');
-    const severityIndex = headers.indexOf('severity');
-    const titleIndex = headers.indexOf('title');
-    const messageIndex = headers.indexOf('message');
-    const dateIndex = headers.indexOf('date');
-
-    if (
-      [
-        idIndex,
-        severityIndex,
-        titleIndex,
-        messageIndex,
-        dateIndex,
-      ].includes(-1)
-    ) {
-      console.error(
-        'Google Sheet is missing required columns: id, severity, title, message, date'
+      console.warn(
+        'Google Sheet returned no alert rows.'
       );
 
       return [];
     }
 
-    return rows
-      .slice(1)
-      .map((values) => {
-        const id = parseInt(values[idIndex] || '', 10);
+    const headers = rows[0].map(
+      (header) =>
+        header
+          .trim()
+          .toLowerCase()
+          .replace(/^\uFEFF/, '')
+    );
 
-        if (isNaN(id)) {
+    console.log(
+      'Google Sheet headers:',
+      headers
+    );
+
+    const idIndex =
+      headers.indexOf('id');
+
+    const severityIndex =
+      headers.indexOf('severity');
+
+    const titleIndex =
+      headers.indexOf('title');
+
+    const messageIndex =
+      headers.indexOf('message');
+
+    const dateIndex =
+      headers.indexOf('date');
+
+    if (
+      idIndex === -1 ||
+      severityIndex === -1 ||
+      titleIndex === -1 ||
+      messageIndex === -1 ||
+      dateIndex === -1
+    ) {
+      console.error(
+        'Google Sheet must contain these columns: id, severity, title, message, date'
+      );
+
+      return [];
+    }
+
+    const alerts = rows
+      .slice(1)
+      .map((values, rowIndex) => {
+        const rawId =
+          values[idIndex]?.trim() || '';
+
+        const id = parseInt(
+          rawId,
+          10
+        );
+
+        if (Number.isNaN(id)) {
+          console.warn(
+            `Skipping alert row ${rowIndex + 2}: invalid id`
+          );
+
           return null;
         }
 
-        const rawSeverity =
-          values[severityIndex]?.trim() || 'Info';
+        const title =
+          values[titleIndex]?.trim() || '';
 
-        let severity: AlertSeverity = 'Info';
-
-        if (rawSeverity.toLowerCase() === 'critical') {
-          severity = 'Critical';
-        } else if (rawSeverity.toLowerCase() === 'warning') {
-          severity = 'Warning';
-        } else if (rawSeverity.toLowerCase() === 'info') {
-          severity = 'Info';
+        if (!title) {
+          return null;
         }
 
         return {
           id,
-          severity,
-          title: values[titleIndex]?.trim() || '',
-          message: values[messageIndex]?.trim() || '',
-          date: values[dateIndex]?.trim() || '',
+          severity: normalizeSeverity(
+            values[severityIndex] || ''
+          ),
+          title,
+          message:
+            values[messageIndex]?.trim() || '',
+          date:
+            values[dateIndex]?.trim() || '',
         };
       })
       .filter(
         (item): item is AlertItem =>
-          item !== null && item.title !== ''
+          item !== null
       );
+
+    console.log(
+      'Parsed HCSS alerts:',
+      alerts
+    );
+
+    return alerts;
   } catch (error) {
     console.error(
       'Error parsing Google Sheet CSV:',
@@ -162,21 +234,33 @@ const parseCsvToAlerts = (csvText: string): AlertItem[] => {
 
 
 function App() {
-  const [alerts, setAlerts] = useState<AlertItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [alerts, setAlerts] =
+    useState<AlertItem[]>([]);
 
-  const [isAuthenticated, setIsAuthenticated] =
-    useState(false);
+  const [isLoading, setIsLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState<string | null>(null);
+
+  const [
+    isAuthenticated,
+    setIsAuthenticated,
+  ] = useState(false);
 
 
   useEffect(() => {
     const fetchAlerts = async () => {
       if (
         !ALERTS_SHEET_CSV_URL ||
-        !ALERTS_SHEET_CSV_URL.startsWith('http')
+        !ALERTS_SHEET_CSV_URL.startsWith(
+          'http'
+        )
       ) {
         setAlerts([]);
+        setError(
+          'Alert feed is not configured.'
+        );
         setIsLoading(false);
         return;
       }
@@ -186,35 +270,53 @@ function App() {
 
       try {
         const separator =
-          ALERTS_SHEET_CSV_URL.includes('?') ? '&' : '?';
+          ALERTS_SHEET_CSV_URL.includes('?')
+            ? '&'
+            : '?';
 
         const freshUrl =
-          `${ALERTS_SHEET_CSV_URL}${separator}t=${Date.now()}`;
+          `${ALERTS_SHEET_CSV_URL}${separator}cacheBust=${Date.now()}`;
 
-        const response = await fetch(freshUrl, {
-          cache: 'no-store',
-        });
+        console.log(
+          'Loading alerts from:',
+          freshUrl
+        );
+
+        const response = await fetch(
+          freshUrl,
+          {
+            method: 'GET',
+            cache: 'no-store',
+          }
+        );
 
         if (!response.ok) {
           throw new Error(
-            `Google Sheet request failed: ${response.status}`
+            `Google Sheet returned HTTP ${response.status}`
           );
         }
 
-        const csvText = await response.text();
-
-        const data = parseCsvToAlerts(csvText);
+        const csvText =
+          await response.text();
 
         console.log(
-          'HCSS alerts loaded:',
-          data
+          'Raw Google Sheet response:',
+          csvText
         );
 
-        setAlerts(data);
-      } catch (e) {
+        if (!csvText.trim()) {
+          setAlerts([]);
+          return;
+        }
+
+        const parsedAlerts =
+          parseCsvToAlerts(csvText);
+
+        setAlerts(parsedAlerts);
+      } catch (err) {
         console.error(
-          'Failed to retrieve alerts:',
-          e
+          'Failed to load alerts:',
+          err
         );
 
         setAlerts([]);
@@ -302,7 +404,9 @@ function App() {
 
             <Route
               path="/entertainment"
-              element={<EntertainmentPage />}
+              element={
+                <EntertainmentPage />
+              }
             />
 
             <Route
@@ -310,11 +414,15 @@ function App() {
               element={
                 isAuthenticated ? (
                   <AdminPage
-                    onLogout={handleLogout}
+                    onLogout={
+                      handleLogout
+                    }
                   />
                 ) : (
                   <LoginPage
-                    onLogin={handleLogin}
+                    onLogin={
+                      handleLogin
+                    }
                   />
                 )
               }
@@ -340,6 +448,5 @@ function App() {
     </HashRouter>
   );
 }
-
 
 export default App;
