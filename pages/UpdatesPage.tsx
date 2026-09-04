@@ -84,29 +84,25 @@ const UpdateCard: React.FC<{
       textDecoration: 'none',
       position: 'relative',
       overflow: 'hidden',
-
+      width: '100%',
+      maxWidth: '210px',
       borderRadius: '26px',
       padding: '22px 16px',
       minHeight: '150px',
-
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
       gap: '14px',
-
       animation: 'updateFloat 4.5s ease-in-out infinite',
       animationDelay: `${index * 0.35}s`,
-
       background:
         'linear-gradient(145deg, rgba(255,255,255,0.96), rgba(246,248,252,0.92))',
-
       border: '1px solid rgba(13,36,62,0.08)',
-
       boxShadow:
         '0 12px 30px rgba(13,36,62,0.10), inset 0 1px 0 rgba(255,255,255,0.9)',
-
       transition: 'box-shadow 0.25s ease',
+      boxSizing: 'border-box',
     }}
     onMouseEnter={(e) => {
       e.currentTarget.style.boxShadow =
@@ -122,14 +118,11 @@ const UpdateCard: React.FC<{
         width: '58px',
         height: '58px',
         borderRadius: '20px',
-
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-
         background:
           'linear-gradient(145deg, rgba(136,28,28,0.10), rgba(13,36,62,0.06))',
-
         boxShadow: '0 8px 20px rgba(13,36,62,0.08)',
       }}
     >
@@ -175,10 +168,8 @@ const UpdateCard: React.FC<{
         borderRadius: '50%',
         right: '-24px',
         bottom: '-28px',
-
         background:
           'radial-gradient(circle, rgba(136,28,28,0.12), transparent 70%)',
-
         pointerEvents: 'none',
       }}
     />
@@ -255,7 +246,8 @@ const UpdatesPage: React.FC = () => {
             style={{
               display: 'grid',
               gridTemplateColumns:
-                'repeat(auto-fit, minmax(150px, 1fr))',
+                'repeat(auto-fit, minmax(150px, 210px))',
+              justifyContent: 'center',
               gap: '16px',
             }}
           >
@@ -285,7 +277,8 @@ const UpdatesPage: React.FC = () => {
             style={{
               display: 'grid',
               gridTemplateColumns:
-                'repeat(auto-fit, minmax(150px, 1fr))',
+                'repeat(auto-fit, minmax(150px, 210px))',
+              justifyContent: 'center',
               gap: '16px',
             }}
           >
