@@ -12,7 +12,6 @@ import EntertainmentPage from './pages/EntertainmentPage.tsx';
 import AlertsPage from './pages/AlertsPage.tsx';
 import AdminPage from './pages/AdminPage.tsx';
 import LoginPage from './pages/LoginPage.tsx';
-import { HCSS_LOGO_BASE64 } from './assets.ts';
 import { ADMIN_PASSWORD, ALERTS_SHEET_CSV_URL } from './constants.ts';
 import type { AlertItem, AlertSeverity } from './types.ts';
 
@@ -125,11 +124,6 @@ function App() {
       <div className="flex flex-col min-h-screen font-sans bg-slate-100">
         <Header />
         <main className="flex-grow pb-20 relative">
-          <div 
-            className="absolute inset-0 bg-contain bg-no-repeat bg-center opacity-[0.02] -z-10 pointer-events-none" 
-            style={{ backgroundImage: `url('${HCSS_LOGO_BASE64}')` }}
-            aria-hidden="true"
-          ></div>
           <Routes>
             <Route path="/home" element={<HomePage alerts={alerts} isLoading={isLoading} error={error} />} />
             <Route path="/updates" element={<UpdatesPage />} />
