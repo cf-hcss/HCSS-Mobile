@@ -4,17 +4,22 @@
     <meta charset="UTF-8" />
     <link rel="icon" href="./icon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>HCSS Hub</title>
-    
-    <!-- PWA Manifest Link -->
+
     <link rel="manifest" href="./manifest.json" />
     <meta name="theme-color" content="#ffffff" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
       tailwind.config = {
         theme: {
@@ -46,31 +51,39 @@
                 '50%': { transform: 'translateY(-15%)' },
               },
               'fade-in-up': {
-                '0%': { opacity: '0', transform: 'translateY(10px) scale(0.95)' },
-                '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+                '0%': {
+                  opacity: '0',
+                  transform: 'translateY(10px) scale(0.95)',
+                },
+                '100%': {
+                  opacity: '1',
+                  transform: 'translateY(0) scale(1)',
+                },
               },
-            }
-          }
+            },
+          },
+        },
+      };
+    </script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "react/": "https://aistudiocdn.com/react@^19.2.0/",
+          "react": "https://aistudiocdn.com/react@^19.2.0",
+          "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+          "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.4",
+          "@google/genai": "https://aistudiocdn.com/@google/genai@^1.28.0"
         }
       }
     </script>
-  <script type="importmap">
-{
-  "imports": {
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.4",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.28.0"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
-</head>
+
+    <link rel="stylesheet" href="/index.css" />
+  </head>
+
   <body class="font-sans bg-slate-100 text-gray-800">
     <div id="root"></div>
-    <script type="module" src="./index.tsx"></script>
-    <script>
 
-</body>
+    <script type="module" src="./index.tsx"></script>
+  </body>
 </html>
