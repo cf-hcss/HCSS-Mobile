@@ -249,9 +249,11 @@ const HomePage: React.FC<HomePageProps> = ({ alerts, isLoading, error }) => {
     return null;
   }
 
-  return (
+return (
+  <>
+    <style>{cardFloatStyle}</style>
+
     <div className="p-4 sm:p-6 max-w-4xl mx-auto text-center">
-      
       {renderAlert()}
 
     <div
@@ -318,7 +320,8 @@ const HomePage: React.FC<HomePageProps> = ({ alerts, isLoading, error }) => {
           <LinkCard key={link.title} item={link} />
         ))}
       </div>
-    </div>
+        </div>
+  </>
   );
 };
 
