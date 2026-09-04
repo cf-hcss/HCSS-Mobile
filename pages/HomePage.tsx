@@ -181,7 +181,13 @@ const HomePage: React.FC<HomePageProps> = ({ alerts, isLoading, error }) => {
     School resources in one place.
   </p>
 </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      <div
+  style={{
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+    gap: '16px',
+  }}
+>
         {IMPORTANT_LINKS.map((link) => (
           <LinkCard key={link.title} item={link} />
         ))}
