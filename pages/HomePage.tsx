@@ -66,8 +66,59 @@ const HomePage: React.FC<HomePageProps> = ({ alerts, isLoading, error }) => {
       
       {renderAlert()}
 
-      <h2 className="text-3xl font-bold text-brand-navy mb-2">HCSS Quick Links</h2>
-      <p className="text-gray-600 mb-8">Access important resources and portals.</p>
+    <div
+  style={{
+    textAlign: 'center',
+    marginBottom: '28px',
+    padding: '0 16px',
+  }}
+>
+  <div
+    style={{
+      fontSize: '12px',
+      fontWeight: 700,
+      letterSpacing: '2px',
+      textTransform: 'uppercase',
+      color: '#881c1c',
+      marginBottom: '6px',
+    }}
+  >
+    Quick Access
+  </div>
+
+  <h1
+    style={{
+      margin: 0,
+      fontSize: 'clamp(28px, 5vw, 44px)',
+      fontWeight: 900,
+      letterSpacing: '-1.5px',
+      color: '#0d243e',
+      lineHeight: 1.05,
+    }}
+  >
+    Everything you need,
+    <span
+      style={{
+        color: '#881c1c',
+        fontStyle: 'italic',
+        marginLeft: '8px',
+      }}
+    >
+      fast.
+    </span>
+  </h1>
+
+  <p
+    style={{
+      marginTop: '10px',
+      marginBottom: 0,
+      color: '#64748b',
+      fontSize: '15px',
+    }}
+  >
+    School resources in one place.
+  </p>
+</div>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         {IMPORTANT_LINKS.map((link) => (
           <LinkCard key={link.title} item={link} />
